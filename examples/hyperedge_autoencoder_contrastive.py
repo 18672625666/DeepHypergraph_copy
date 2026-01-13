@@ -168,16 +168,26 @@ class HyperedgeAutoencoder(nn.Module):
 
 def mask_node_features(X: torch.Tensor, mask_rate: float = 0.3) -> torch.Tensor:
     """
-    Mask node features for data augmentation by randomly setting features to zero.
+    Mask node features for data augmentation by randomly masking entire nodes.
+    
+    This function implements node-level masking where entire node feature vectors
+    are set to zero. This is a common augmentation strategy in graph contrastive
+    learning that forces the model to be robust to node dropout.
+    
+    Note: Alternative strategies include:
+    - Feature-level masking: mask individual features within nodes (X_aug[mask_nodes, mask_features] = 0)
+    - Gaussian noise: add random noise instead of zeroing out
+    - Edge dropout: remove hyperedge connections (requires hypergraph modification)
     
     Args:
         X: Node feature matrix of size (num_nodes, feature_dim)
-        mask_rate: Proportion of features to mask
+        mask_rate: Proportion of nodes to mask (not individual features)
         
     Returns:
-        Masked node feature matrix
+        Masked node feature matrix with the same shape as input
     """
     X_aug = X.clone()
+    # Node-level masking: randomly select nodes and zero out all their features
     mask = torch.rand(X.shape[0]) < mask_rate
     X_aug[mask] = 0.0
     return X_aug
