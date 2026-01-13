@@ -510,13 +510,17 @@ def main():
     
     print(f"Hypergraph created: {num_nodes} nodes, {hg.num_e} hyperedges\n")
     
+    # Configuration
+    use_hgnnp = False  # Set to True to use HGNNP instead of HGNN
+    hidden_dim = 64
+    
     # Train Hyperedge Autoencoder
     model, hyperedge_embeddings, history = train_hyperedge_autoencoder(
         X=X,
         hg=hg,
         in_dim=num_features,
-        hidden_dim=64,
-        use_hgnnp=False,  # Set to True to use HGNNP instead of HGNN
+        hidden_dim=hidden_dim,
+        use_hgnnp=use_hgnnp,
         use_bn=False,
         drop_rate=0.3,
         lr=0.001,
@@ -535,9 +539,9 @@ def main():
     print("\n" + "=" * 80)
     print("Training Summary:")
     print("=" * 80)
-    print(f"Model type: {'HGNNP' if False else 'HGNN'}")
+    print(f"Model type: {'HGNNP' if use_hgnnp else 'HGNN'}")
     print(f"Input dimension: {num_features}")
-    print(f"Hidden dimension: 64")
+    print(f"Hidden dimension: {hidden_dim}")
     print(f"Number of training epochs: {len(history['total_loss'])}")
     print(f"Final total loss: {history['total_loss'][-1]:.4f}")
     print(f"Final reconstruction loss: {history['recon_loss'][-1]:.4f}")
